@@ -2,25 +2,22 @@
 <html>
 <head>
     <title>Subsystem Editor</title>
-    <style>
-        .subsystem {
-            cursor: pointer;
-            padding: 5px;
-            margin: 5px;
-            border: 1px solid #ccc;
-            display: inline-block;
-        }
-        #propertyGrid {
-            margin-top: 20px;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-    <input type="file" id="fileInput">
-    <div id="subsystemGrid"></div>
-    <div id="propertyGrid"></div>
-    <button id="saveButton">Save Changes</button>
-    <button id="addSubsystemButton">Add Subsystem</button>
+    <div class="header">
+        <h1>Subsystem Dashboard</h1>
+    </div>
+    <div class="container">
+        <div class="sidebar">
+            <h2>Subsystem List</h2>
+            <ul class="subsystem-list" id="subsystemList"></ul>
+        </div>
+        <div class="property-grid" id="propertyGrid">
+            <h2>Subsystem Properties</h2>
+        </div>
+    </div>
+    <input type="file" id="fileInput" style="display: none;">
     <script src="script.js"></script>
 </body>
 </html>
