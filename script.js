@@ -1,129 +1,42 @@
 
 // For subsystems
-const fs = require('fs');
-var xml2js = require("xml2js")
+const { app, BrowserWindow } = require('electron')
+const fs = require("fs");
+var xml2js = require("xml2js");
 var parseString = require('xml2js').parseString;
 
-// Read the XML file
-const xmlContent = fs.readFile('DSAC_STATIC.xml', 'utf8', (err, data) => {
-    if (err) {
-        console.error("Error reading XML file:", err);
-        return;
+const subSystems = [];
+
+document.getElementById('openSubsystem').addEventListener('click', openSubsystem);
+
+class SubSystem {
+    constructor(name) {
+        this.subsystemName = name;
     }
-    
-    parseXmlFile(xmlContent);
-});
+}
 
+function openSubsystem() {
+    const xmlFile = fs.readFileSync("DSAC_Static.xml", 'utf8');
+    const sub = new SubSystem('Test');
 
-// Function to parse the XML file content and extract subsystem data
-function parseXmlFile(xmlContent) {
-    const subsystems = [];
+    parseString(xmlFile, function (err, result) {
+        console.dir(result.MODEL.ASSET[0].SUBSYSTEM[1]);
+        sub.subsystemName = result.MODEL.ASSET[0].SUBSYSTEM[1].$.subsystemName;
+    });
 
-    parseString(xmlContent, (err, result) => {
-        if (err) {
-            console.error("Error parsing XML:", err);
-            return;
-        }
+    subSystems.push(sub);
 
-        const assetElements = result.MODEL.ASSET;
+    const subSystemList = document.getElementById("subSystemList");
+    subSystemList.innerHTML += `<button type="button" class="list-group-item list-group-action" id="${sub.subsystemName}">${sub.subsystemName}</button>`;
 
-        for (const assetElement of assetElements) {
-            const subsystemElements = assetElement.SUBSYSTEM;
-            const subsystemsData = [];
-
-            for (const subsystemElement of subsystemElements) {
-                const subsystem = {
-                    type: subsystemElement.$.Type,
-                    name: subsystemElement.$.subsystemName,
-                    attributes: [],
-                    states: []
-                };
-
-                // Extract attributes and states here as needed
-                // Example: Parsing attributes
-                if (subsystemElement.IC) {
-                    for (const icElement of subsystemElement.IC) {
-                        const key = icElement.$.key;
-                        const value = icElement.$.value;
-                        subsystem.attributes.push({ key, value });
-                    }
-                }
-
-                // Example: Parsing states
-                if (subsystemElement.STATEVAR) {
-                    for (const stateVarElement of subsystemElement.STATEVAR) {
-                        const key = stateVarElement.$.key;
-                        const type = stateVarElement.$.type;
-                        // Extract other attributes and values as needed
-                        subsystem.states.push({ key, type });
-                    }
-                }
-
-                subsystemsData.push(subsystem);
-            }
-
-            subsystems.push(subsystemsData);
-        }
-
-        displaySubsystems(subsystems); // Display the extracted data in the UI
+    document.querySelectorAll('.list-group-item').forEach(item => {
+        item.addEventListener('click', () => displaySubsystemDetails(sub.subsystemName));
     });
 }
 
-function displaySubsystems(subsystemsData) {
-    subsystemList.innerHTML = "";
+function displaySubsystemDetails(subsystemName) {
+    const detailsElement = document.getElementById("subsystemDetails");
+    const sub = subSystems.find(sub => sub.subsystemName === subsystemName);
 
-    subsystemsData.forEach(asset => {
-        asset.forEach(subsystem => {
-            const subsystemItem = document.createElement("li");
-            subsystemItem.textContent = `Asset: ${asset[0].name} | Subsystem: ${subsystem.name}`;
-            subsystemItem.classList.add("subsystem-item");
-            subsystemItem.addEventListener("click", () => displayProperties(subsystem));
-            subsystemList.appendChild(subsystemItem);
-        });
-    });
+    detailsElement.textContent = JSON.stringify(sub, null, 2);
 }
-
-function displayProperties(subsystem) {
-    propertyGrid.innerHTML = "";
-
-    subsystem.attributes.forEach(attribute => {
-        const propertyItem = document.createElement("div");
-        propertyItem.classList.add("property-item");
-        const propertyLabel = document.createElement("label");
-        propertyLabel.textContent = attribute.key;
-        propertyLabel.classList.add("property-label");
-        const propertyInput = document.createElement("input");
-        propertyInput.value = attribute.value;
-        propertyInput.classList.add("property-input");
-        propertyItem.appendChild(propertyLabel);
-        propertyItem.appendChild(propertyInput);
-        propertyGrid.appendChild(propertyItem);
-    });
-
-    subsystem.states.forEach(state => {
-        const propertyItem = document.createElement("div");
-        propertyItem.classList.add("property-item");
-        const propertyLabel = document.createElement("label");
-        propertyLabel.textContent = state.key;
-        propertyLabel.classList.add("property-label");
-        const propertyInput = document.createElement("input");
-        propertyInput.value = state.type; // Displaying state type for illustration
-        propertyInput.classList.add("property-input");
-        propertyItem.appendChild(propertyLabel);
-        propertyItem.appendChild(propertyInput);
-        propertyGrid.appendChild(propertyItem);
-    });
-}
-
-// Attach event listener to the file input
-fileInput.addEventListener("change", event => {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-
-    reader.onload = function(e) {
-        const xmlContent = e.target.result;
-        parseXmlFile(xmlContent);
-    };
-
-    reader.readAsText(file);
-});
