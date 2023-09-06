@@ -1,23 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Subsystem Editor</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subsystem Dashboard</title>
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-    <div class="header">
+    <header>
         <h1>Subsystem Dashboard</h1>
-    </div>
+    </header>
+
     <div class="container">
-        <div class="sidebar">
-            <h2>Subsystem List</h2>
-            <ul class="subsystem-list" id="subsystemList"></ul>
+        <div class="subsystem-list">
+            <h2>Subsystems</h2>
+            <div id="subsystemGrid" class="subsystem-grid">
+                <!-- Subsystem buttons will be added here -->
+            </div>
         </div>
-        <div class="property-grid" id="propertyGrid">
-            <h2>Subsystem Properties</h2>
+
+        <div class="property-list">
+            <h2>Properties</h2>
+            <div id="propertyGrid" class="property-grid">
+                <!-- Properties will be displayed here -->
+            </div>
+            <button id="saveButton">Save Changes</button>
         </div>
     </div>
-    <input type="file" id="fileInput" style="display: none;">
+
+    <button id="addSubsystemButton">Add New Subsystem</button>
+
     <script src="script.js"></script>
 </body>
 </html>

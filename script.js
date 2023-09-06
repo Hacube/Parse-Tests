@@ -1,42 +1,104 @@
-
 // For subsystems
-const { app, BrowserWindow } = require('electron')
-const fs = require("fs");
-var xml2js = require("xml2js");
-var parseString = require('xml2js').parseString;
+const subsystems = [];
 
-const subSystems = [];
+function displaySubsystems() {
+    const subsystemGrid = document.getElementById("subsystemGrid");
+    subsystemGrid.innerHTML = "";
 
-document.getElementById('openSubsystem').addEventListener('click', openSubsystem);
-
-class SubSystem {
-    constructor(name) {
-        this.subsystemName = name;
-    }
-}
-
-function openSubsystem() {
-    const xmlFile = fs.readFileSync("DSAC_Static.xml", 'utf8');
-    const sub = new SubSystem('Test');
-
-    parseString(xmlFile, function (err, result) {
-        console.dir(result.MODEL.ASSET[0].SUBSYSTEM[1]);
-        sub.subsystemName = result.MODEL.ASSET[0].SUBSYSTEM[1].$.subsystemName;
-    });
-
-    subSystems.push(sub);
-
-    const subSystemList = document.getElementById("subSystemList");
-    subSystemList.innerHTML += `<button type="button" class="list-group-item list-group-action" id="${sub.subsystemName}">${sub.subsystemName}</button>`;
-
-    document.querySelectorAll('.list-group-item').forEach(item => {
-        item.addEventListener('click', () => displaySubsystemDetails(sub.subsystemName));
+    subsystems.forEach(subsystem => {
+        const subsystemElement = document.createElement("div");
+        subsystemElement.textContent = subsystem.name;
+        subsystemElement.classList.add("subsystem");
+        subsystemElement.addEventListener("click", () => displayProperties(subsystem));
+        subsystemGrid.appendChild(subsystemElement);
     });
 }
 
-function displaySubsystemDetails(subsystemName) {
-    const detailsElement = document.getElementById("subsystemDetails");
-    const sub = subSystems.find(sub => sub.subsystemName === subsystemName);
+function displayProperties(subsystem) {
+    const propertyGrid = document.getElementById("propertyGrid");
+    propertyGrid.innerHTML = "";
 
-    detailsElement.textContent = JSON.stringify(sub, null, 2);
+    const attributesLabel = document.createElement("h3");
+    attributesLabel.textContent = "Attributes:";
+    propertyGrid.appendChild(attributesLabel);
+
+    subsystem.attributes.forEach(attribute => {
+        const attributeLabel = document.createElement("label");
+        attributeLabel.textContent = `${attribute.name}: `;
+        const attributeInput = document.createElement("input");
+        attributeInput.value = attribute.value;
+        attributeInput.addEventListener("input", () => attribute.value = attributeInput.value);
+        propertyGrid.appendChild(attributeLabel);
+        propertyGrid.appendChild(attributeInput);
+        propertyGrid.appendChild(document.createElement("br"));
+    });
+
+    const statesLabel = document.createElement("h3");
+    statesLabel.textContent = "States:";
+    propertyGrid.appendChild(statesLabel);
+
+    subsystem.states.forEach(state => {
+        const stateLabel = document.createElement("label");
+        stateLabel.textContent = `${state.name}: `;
+        const stateInput = document.createElement("input");
+        stateInput.value = state.value;
+        stateInput.addEventListener("input", () => state.value = stateInput.value);
+        propertyGrid.appendChild(stateLabel);
+        propertyGrid.appendChild(stateInput);
+        propertyGrid.appendChild(document.createElement("br"));
+    });
 }
+
+function saveChanges() {
+    // save the changes to a backend server or file
+    console.log("Changes saved:", subsystems);
+}
+
+function addSubsystem() {
+    const newSubsystem = {
+        name: "New Subsystem",
+        attributes: [],
+        states: []
+    };
+    subsystems.push(newSubsystem);
+    displaySubsystems();
+}
+
+// Load XML data and populate subsystems array
+fetch("DSAC_Static.xml")
+    .then(response => response.text())
+    .then(xmlContent => {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlContent, "text/xml");
+
+        const assetElements = xmlDoc.getElementsByTagName("ASSET");
+
+        for (const assetElement of assetElements) {
+            const subsystem = {
+                name: assetElement.getAttribute("assetName"),
+                attributes: [],
+                states: []
+            };
+
+            const subsystemElements = assetElement.getElementsByTagName("SUBSYSTEM");
+            for (const subsystemElement of subsystemElements) {
+                const subsystemType = subsystemElement.getAttribute("Type");
+                const subsystemName = subsystemElement.getAttribute("subsystemName");
+                
+                // extract other attributes here
+                
+                subsystem.attributes.push({ name: "Type", value: subsystemType });
+                subsystem.attributes.push({ name: "subsystemName", value: subsystemName });
+            }
+
+            subsystems.push(subsystem);
+        }
+
+        displaySubsystems();
+    })
+    .catch(error => {
+        console.error("Error fetching XML:", error);
+    });
+
+document.getElementById("saveButton").addEventListener("click", saveChanges);
+document.getElementById("addSubsystemButton").addEventListener("click", addSubsystem);

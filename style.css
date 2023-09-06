@@ -2,62 +2,51 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f0f0f0;
 }
-
-.header {
+header {
     background-color: #333;
-    color: #fff;
-    padding: 10px;
+    color: white;
     text-align: center;
+    padding: 1rem;
 }
-
 .container {
     display: flex;
-    margin: 20px;
+    justify-content: space-between;
+    margin: 2rem;
 }
-
-.sidebar {
-    flex: 1;
-    background-color: #555;
-    color: #fff;
-    padding: 10px;
-}
-
-.subsystem-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.subsystem-item {
-    cursor: pointer;
-    padding: 5px;
-    margin: 5px 0;
-    border: 1px solid #888;
-}
-
-.subsystem-item:hover {
-    background-color: #444;
-}
-
-.property-grid {
-    flex: 2;
-    background-color: #eee;
-    padding: 10px;
-}
-
-.property-item {
-    margin-bottom: 10px;
-}
-
-.property-label {
-    font-weight: bold;
-}
-
-.property-input {
-    width: 100%;
-    padding: 5px;
+.subsystem-list, .property-list {
+    width: 48%;
     border: 1px solid #ccc;
-    border-radius: 3px;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+.subsystem-grid {
+    display: flex;
+    flex-direction: column;
+}
+.subsystem {
+    cursor: pointer;
+    padding: 0.5rem 0;
+}
+.property-grid {
+    padding-top: 1rem;
+}
+.property-grid label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+.property-grid input {
+    width: 100%;
+    padding: 0.3rem;
+}
+#addSubsystemButton, #saveButton {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+#addSubsystemButton:hover, #saveButton:hover {
+    background-color: #0056b3;
 }

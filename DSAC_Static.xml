@@ -1,23 +1,5 @@
 <MODEL>
 	<ASSET assetName="Asset1">
-		<DynamicState
-      DynamicStateType="PREDETERMINED_ECI"
-			ICs="[7378.137; 0.0; 0.0; 0.0; 6.02088; 4.215866]">
-			<EOMS
-				EOMSType="orbital_EOMS">
-			</EOMS>
-		</DynamicState>
-		<SUBSYSTEM
-			Type="Access"
-			subsystemName = "Access">
-		</SUBSYSTEM>
-		<SUBSYSTEM
-			Type="Adcs"
-			subsystemName = "Adcs"
-      slewRate = "5">
-			<IC type="Matrix" key="ECI_Pointing_Vector(XYZ)" value="[0.0; 0.0; 0.0]"></IC>
-			<DEPENDENCY subsystemName="Access"></DEPENDENCY>
-		</SUBSYSTEM>
 		<SUBSYSTEM
 			Type="EOSensor"
 			subsystemName = "EOSensor"
@@ -58,40 +40,8 @@
 			<DEPENDENCY subsystemName="EOSensor" fcnName="PowerfromEOSensor.asset1"></DEPENDENCY>
 			<DEPENDENCY subsystemName="SSDR" fcnName="PowerfromSSDR.asset1"></DEPENDENCY>
 		</SUBSYSTEM>
-		<CONSTRAINT
-			value="0.25"
-			subsystemName = "Power"
-			type="FAIL_IF_HIGHER"
-			name="con1">
-			<STATEVAR type = "Double" key="DepthofDischarge"></STATEVAR>
-		</CONSTRAINT>
-		<CONSTRAINT
-			value="0.7"
-			subsystemName="SSDR"
-			type="FAIL_IF_HIGHER"
-			name="con2">
-			<STATEVAR type = "Double" key="DataBufferFillRatio"></STATEVAR>
-		</CONSTRAINT>
 	</ASSET>
 <ASSET assetName="Asset2">
-		<DynamicState
-			DynamicStateType="PREDETERMINED_ECI"
-			ICs="[-7378.137; 0.0; 0.0; 0.0; -6.02088; 4.215866]">
-			<EOMS
-				EOMSType="orbital_EOMS">
-			</EOMS>
-		</DynamicState>
-		<SUBSYSTEM
-			Type="Access"
-			subsystemName = "Access">
-		</SUBSYSTEM>
-		<SUBSYSTEM
-			Type="Adcs"
-			subsystemName = "Adcs"
-      slewRate = "5">
-			<IC type="Matrix" key="ECI_Pointing_Vector(XYZ)" value="[0.0; 0.0; 0.0]"></IC>
-			<DEPENDENCY subsystemName="Access"></DEPENDENCY>
-		</SUBSYSTEM>
 		<SUBSYSTEM
 			Type="EOSensor"
 			subsystemName = "EOSensor"
@@ -132,21 +82,5 @@
 			<DEPENDENCY subsystemName="EOSensor" fcnName="PowerfromEOSensor.asset2"></DEPENDENCY>
 			<DEPENDENCY subsystemName="SSDR" fcnName="PowerfromSSDR.asset2"></DEPENDENCY>
 		</SUBSYSTEM>
-		<CONSTRAINT
-			value="0.25"
-			subsystemName = "Power"
-			type="FAIL_IF_HIGHER"
-			name="con1">
-			<STATEVAR type = "Double" key="DepthofDischarge"></STATEVAR>
-		</CONSTRAINT>
-		<CONSTRAINT
-			value="0.7"
-			subsystemName="SSDR"
-			type="FAIL_IF_HIGHER"
-			name="con2">
-			<STATEVAR type = "Double" key="DataBufferFillRatio"></STATEVAR>
-		</CONSTRAINT>
 	</ASSET>
-
-
 </MODEL>
