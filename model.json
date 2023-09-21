@@ -1,0 +1,54 @@
+{
+    "MODEL": {
+      "ASSET": [
+        {
+          "assetName": "Asset1",
+          "SUBSYSTEM": [
+            {
+              "Type": "Access",
+              "subsystemName": "Access"
+            },
+            {
+              "Type": "Adcs",
+              "subsystemName": "Adcs",
+              "slewRate": "5",
+              "IC": [
+                {
+                  "type": "Matrix",
+                  "key": "ECI_Pointing_Vector(XYZ)",
+                  "value": "[0.0; 0.0; 0.0]"
+                }
+              ],
+              "DEPENDENCY": [
+                {
+                  "subsystemName": "Access"
+                }
+              ]
+            },
+            {
+              "Type": "EOSensor",
+              "subsystemName": "EOSensor",
+              "lowQualityNumPixels": "5000",
+              "midQualityNumPixels": "10000",
+              "highQualityNumPixels": "15000",
+              "lowQualityCaptureTime": "3",
+              "midQualityCaptureTime": "5",
+              "highQualityCaptureTime": "7",
+              "IC": [
+                {
+                  "type": "Double",
+                  "key": "numPixels",
+                  "value": "0.0"
+                }
+              ],
+              "DEPENDENCY": [
+                {
+                  "subsystemName": "Adcs"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }

@@ -1,42 +1,70 @@
-const subSystems = [];
+const electron = require('electron');
+const fs = require('fs');
 
-document.getElementById('openSubsystem').addEventListener('click', openSubsystem);
+const { app, BrowserWindow } = electron;
 
-class SubSystem {
-    constructor(name) {
-        this.subsystemName = name;
+let mainWindow;
+
+app.on('ready', () => {
+  mainWindow = new BrowserWindow({ width: 800, height: 600 });
+  mainWindow.loadFile('index.html');
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  });
+
+  // Load and parse JSON
+  fs.readFile('model.json', 'utf-8', (err, data) => {
+    if (err) {
+      console.error('Error reading JSON file:', err);
+      return;
     }
-}
 
-function openSubsystem() {
-    fetch("DSAC_Static.xml")
-        .then(response => response.text())
-        .then(xmlContent => {
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(xmlContent, "text/xml");
+    try {
+      const jsonData = JSON.parse(data);
+      const subsystems = jsonData.MODEL.ASSET[0].SUBSYSTEM;
 
-            const sub = new SubSystem('Test');
+      // Display subsystems in the sidebar
+      const subsystemList = document.getElementById('subsystemList');
+      subsystems.forEach((subsystem) => {
+        const subsystemName = subsystem.subsystemName;
+        const subsystemItem = document.createElement('li');
+        subsystemItem.textContent = subsystemName;
+        subsystemList.appendChild(subsystemItem);
 
-            const subsystemName = xmlDoc.querySelector("ASSET > SUBSYSTEM").getAttribute("subsystemName");
-            sub.subsystemName = subsystemName;
-
-            subSystems.push(sub);
-
-            const subSystemList = document.getElementById("subSystemList");
-            subSystemList.innerHTML += `<button type="button" class="list-group-item list-group-action" id="${sub.subsystemName}">${sub.subsystemName}</button>`;
-
-            document.querySelectorAll('.list-group-item').forEach(item => {
-                item.addEventListener('click', () => displaySubsystemDetails(sub.subsystemName));
-            });
-        })
-        .catch(error => {
-            console.error("Error fetching XML:", error);
+        // Handle subsystem click to display properties
+        subsystemItem.addEventListener('click', () => {
+          displayProperties(subsystem);
         });
+      });
+    } catch (jsonError) {
+      console.error('Error parsing JSON:', jsonError);
+    }
+  });
+});
+
+function displayProperties(subsystem) {
+  const propertyGrid = document.getElementById('propertyGrid');
+  propertyGrid.innerHTML = ''; // Clear existing properties
+
+  const properties = subsystem.IC || [];
+  properties.forEach((property) => {
+    const key = property.key;
+    const value = property.value;
+    const input = createInputField(property.type, value);
+    const label = document.createElement('label');
+    label.textContent = key;
+
+    const propertyDiv = document.createElement('div');
+    propertyDiv.className = 'property';
+    propertyDiv.appendChild(label);
+    propertyDiv.appendChild(input);
+    propertyGrid.appendChild(propertyDiv);
+  });
 }
 
-function displaySubsystemDetails(subsystemName) {
-    const detailsElement = document.getElementById("subsystemDetails");
-    const sub = subSystems.find(sub => sub.subsystemName === subsystemName);
-
-    detailsElement.textContent = JSON.stringify(sub, null, 2);
+function createInputField(type, value) {
+  const input = document.createElement('input');
+  input.type = type;
+  input.value = value;
+  return input;
 }
